@@ -43,12 +43,12 @@ func NewClient(companyCode string, employeeNo string, password string) *Client {
 		AuthBaseURL:   authBaseURL,
 	}
 
-	tokenInfo, err := c.getTokenInfo(companyCode, employeeNo, password)
+	loginInfo, err := c.login(companyCode, employeeNo, password)
 	if err != nil {
 		panic(err)
 	}
 
-	accessToken, err := c.getAccessToken(tokenInfo.Code)
+	accessToken, err := c.getAccessToken(loginInfo.Code)
 	if err != nil {
 		panic(err)
 	}
