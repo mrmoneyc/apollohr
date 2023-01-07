@@ -17,7 +17,7 @@ const (
 	srvLocationChina  = "PCRU8J4app"
 )
 
-type TokenInfo struct {
+type LoginInfo struct {
 	AccessToken           string    `json:"access_token"`
 	TokenType             string    `json:"token_type"`
 	ExpiresIn             int       `json:"expires_in"`
@@ -37,17 +37,17 @@ type AccessToken struct {
 	Apphash string `json:"apphash"`
 }
 
-func (c *Client) getTokenInfo(companyCode, employeeNo, password string) (TokenInfo, error) {
+func (c *Client) login(companyCode, employeeNo, password string) (LoginInfo, error) {
 	now := time.Now().Unix()
 	hash := getMagicHash("POST", "/token", now, srvLocationGlobal)
 	userName := fmt.Sprintf("%s-%s", companyCode, employeeNo)
 
-	tokenInfo := TokenInfo{}
+	loginInfo := LoginInfo{}
 
 	urlStr := fmt.Sprintf("%s/token", c.AuthBaseURL)
 	u, err := url.Parse(urlStr)
 	if err != nil {
-		return tokenInfo, err
+		return loginInfo, err
 	}
 
 	v := url.Values{}
@@ -58,7 +58,7 @@ func (c *Client) getTokenInfo(companyCode, employeeNo, password string) (TokenIn
 
 	req, err := http.NewRequest("POST", u.String(), reqBody)
 	if err != nil {
-		return tokenInfo, err
+		return loginInfo, err
 	}
 
 	req.Header.Add("Content-Type", "application/x-www-form-urlencoded; charset=utf-8")
@@ -72,7 +72,7 @@ func (c *Client) getTokenInfo(companyCode, employeeNo, password string) (TokenIn
 
 	resp, err := c.client.Do(req)
 	if err != nil {
-		return tokenInfo, err
+		return loginInfo, err
 	}
 	defer resp.Body.Close()
 
@@ -80,14 +80,14 @@ func (c *Client) getTokenInfo(companyCode, employeeNo, password string) (TokenIn
 		errorResponse := ErrorResponse{}
 		err = json.NewDecoder(resp.Body).Decode(&errorResponse)
 		if err != nil {
-			return tokenInfo, err
+			return loginInfo, err
 		}
-		return tokenInfo, errors.New(errorResponse.Error.Title)
+		return loginInfo, errors.New(errorResponse.Error.Title)
 	}
 
-	err = json.NewDecoder(resp.Body).Decode(&tokenInfo)
+	err = json.NewDecoder(resp.Body).Decode(&loginInfo)
 
-	return tokenInfo, err
+	return loginInfo, err
 }
 
 func (c *Client) getAccessToken(code string) (AccessToken, error) {
