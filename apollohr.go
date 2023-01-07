@@ -22,9 +22,6 @@ type Client struct {
 }
 
 type ErrorResponse struct {
-	Meta struct {
-		HTTPStatusCode string `json:"HttpStatusCode"`
-	} `json:"Meta"`
 	Error struct {
 		Status       string      `json:"Status"`
 		Title        string      `json:"Title"`

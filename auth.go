@@ -82,7 +82,7 @@ func (c *Client) getTokenInfo(companyCode, employeeNo, password string) (TokenIn
 		if err != nil {
 			return tokenInfo, err
 		}
-		return tokenInfo, errors.New(errorResponse.Error.Detail)
+		return tokenInfo, errors.New(errorResponse.Error.Title)
 	}
 
 	err = json.NewDecoder(resp.Body).Decode(&tokenInfo)
@@ -123,7 +123,7 @@ func (c *Client) getAccessToken(code string) (AccessToken, error) {
 		if err != nil {
 			return accessToken, err
 		}
-		return accessToken, errors.New(errorResponse.Error.Detail)
+		return accessToken, errors.New(errorResponse.Error.Title)
 	}
 
 	err = json.NewDecoder(resp.Body).Decode(&accessToken)

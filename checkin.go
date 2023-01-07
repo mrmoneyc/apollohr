@@ -11,9 +11,6 @@ import (
 )
 
 type PunchResponse struct {
-	Meta struct {
-		HTTPStatusCode string `json:"HttpStatusCode"`
-	} `json:"Meta"`
 	Data struct {
 		AttendanceHistoryID string      `json:"AttendanceHistoryId"`
 		PunchDate           time.Time   `json:"punchDate"`
@@ -27,9 +24,6 @@ type PunchResponse struct {
 }
 
 type LocationResponse struct {
-	Meta struct {
-		HTTPStatusCode string `json:"HttpStatusCode"`
-	} `json:"Meta"`
 	Data []struct {
 		PunchesLocationID      string  `json:"PunchesLocationId"`
 		LocationCode           string  `json:"LocationCode"`
@@ -96,7 +90,7 @@ func (c *Client) Punch(attendanceType int64, locationName string) (PunchResponse
 		if err != nil {
 			return punchResponse, err
 		}
-		return punchResponse, errors.New(errorResponse.Error.Detail)
+		return punchResponse, errors.New(errorResponse.Error.Title)
 	}
 
 	err = json.NewDecoder(resp.Body).Decode(&punchResponse)
@@ -132,7 +126,7 @@ func (c *Client) GetLocation() (LocationResponse, error) {
 		if err != nil {
 			return locationResponse, err
 		}
-		return locationResponse, errors.New(errorResponse.Error.Detail)
+		return locationResponse, errors.New(errorResponse.Error.Title)
 	}
 
 	err = json.NewDecoder(resp.Body).Decode(&locationResponse)

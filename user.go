@@ -9,9 +9,6 @@ import (
 )
 
 type UserInfo struct {
-	Meta struct {
-		HTTPStatusCode string `json:"HttpStatusCode"`
-	} `json:"Meta"`
 	Data struct {
 		IsVerify                 bool          `json:"isVerify"`
 		UserModule               []string      `json:"userModule"`
@@ -65,7 +62,7 @@ func (c *Client) GetUserInfo() (UserInfo, error) {
 		if err != nil {
 			return userInfo, err
 		}
-		return userInfo, errors.New(errorResponse.Error.Detail)
+		return userInfo, errors.New(errorResponse.Error.Title)
 	}
 
 	err = json.NewDecoder(resp.Body).Decode(&userInfo)
