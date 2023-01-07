@@ -131,6 +131,56 @@ func (c *Client) getAccessToken(code string) (AccessToken, error) {
 	return accessToken, err
 }
 
+func (c *Client) RefreshToken() error {
+	accessToken := AccessToken{}
+
+	urlStr := fmt.Sprintf("%s/api/auth/refreshtoken", c.LinkupBaseURL)
+	u, err := url.Parse(urlStr)
+	if err != nil {
+		return err
+	}
+
+	req, err := http.NewRequest("GET", u.String(), nil)
+	if err != nil {
+		return err
+	}
+
+	req.Header.Add("Authorization", c.token)
+	req.Header.Add("User-Agent", c.UserAgent)
+
+	q := req.URL.Query()
+	q.Add("response_type", "id_token")
+	req.URL.RawQuery = q.Encode()
+
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return err
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusOK {
+		errorResponse := ErrorResponse{}
+		err = json.NewDecoder(resp.Body).Decode(&errorResponse)
+		if err != nil {
+			return err
+		}
+		return errors.New(errorResponse.Error.Title)
+	}
+
+	err = json.NewDecoder(resp.Body).Decode(&accessToken)
+	if err != nil {
+		return err
+	}
+
+	c.token = accessToken.IDToken
+
+	return nil
+}
+
+func (c *Client) GetToken() string {
+	return c.token
+}
+
 func getMagicHash(method string, path string, epoch int64, srvLoc string) string {
 	s := fmt.Sprintf("%s%s%d%s", method, path, epoch, srvLoc)
 	sum := sha256.Sum256([]byte(s))
