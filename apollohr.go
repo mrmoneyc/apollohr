@@ -57,3 +57,20 @@ func NewClient(companyCode string, employeeNo string, password string) *Client {
 
 	return c
 }
+
+func NewClientWithToken(token string) *Client {
+	hrmBaseURL, _ := url.Parse(defaultHRMBaseURL)
+	linkupBaseURL, _ := url.Parse(defaultLinkupBaseURL)
+	authBaseURL, _ := url.Parse(defaultAuthBaseURL)
+
+	c := &Client{
+		client:        &http.Client{},
+		token:         token,
+		UserAgent:     defaultUserAgent,
+		HRMBaseURL:    hrmBaseURL,
+		LinkupBaseURL: linkupBaseURL,
+		AuthBaseURL:   authBaseURL,
+	}
+
+	return c
+}
